@@ -20,33 +20,26 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import attacks.AttackResult;
+import attacks.CaesarAttackHelper;
 import attacks.HillAttack;
-import attacks.MonoalphabeticAttack;
-import attacks.VigenereAttackHelper;
 import utils.MathUtils;
 
 public class AttackPanel extends JPanel {
-    private static final String ATTACK_MONO = "Monoalphabetic Frequency Attack";
+    private static final String ATTACK_CAESAR = "Caesar Brute Force";
     private static final String ATTACK_HILL = "Hill Known-Plaintext Attack";
-    private static final String ATTACK_VIG = "Vigenere Key-Length Helper";
 
-    private final JComboBox<String> attackSelector = new JComboBox<>(new String[]{
-            ATTACK_MONO, ATTACK_HILL, ATTACK_VIG
+    private final JComboBox<String> attackSelector = new JComboBox<String>(new String[]{
+            ATTACK_CAESAR, ATTACK_HILL
     });
 
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel cardPanel = new JPanel(cardLayout);
 
-    private final JTextArea monoCipherArea = new JTextArea(6, 50);
-    private final JSpinner monoCandidatesSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 10, 1));
+    private final JTextArea caesarCipherArea = new JTextArea(6, 50);
 
     private final JTextArea hillPlainArea = new JTextArea(5, 45);
     private final JTextArea hillCipherArea = new JTextArea(5, 45);
     private final JSpinner hillSizeSpinner = new JSpinner(new SpinnerNumberModel(2, 2, 6, 1));
-
-    private final JTextArea vigCipherArea = new JTextArea(6, 50);
-    private final JSpinner vigKeyLenSpinner = new JSpinner(new SpinnerNumberModel(3, 1, 20, 1));
-    private final JSpinner vigCandidatesSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 10, 1));
 
     private final DefaultTableModel tableModel = new DefaultTableModel(
             new Object[]{"Candidate", "Score/Status", "Preview"}, 0) {
@@ -78,9 +71,8 @@ public class AttackPanel extends JPanel {
         gbc.weightx = 1;
         add(top, gbc);
 
-        cardPanel.add(createMonoPanel(), ATTACK_MONO);
+        cardPanel.add(createCaesarPanel(), ATTACK_CAESAR);
         cardPanel.add(createHillPanel(), ATTACK_HILL);
-        cardPanel.add(createVigenerePanel(), ATTACK_VIG);
 
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
@@ -114,9 +106,9 @@ public class AttackPanel extends JPanel {
         switchCard();
     }
 
-    private JPanel createMonoPanel() {
+    private JPanel createCaesarPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(new TitledBorder("Monoalphabetic Frequency Analysis"));
+        panel.setBorder(new TitledBorder("Caesar Brute Force"));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(4, 4, 4, 4);
         gbc.fill = GridBagConstraints.BOTH;
@@ -129,15 +121,7 @@ public class AttackPanel extends JPanel {
 
         gbc.gridy = 1;
         gbc.weighty = 1;
-        panel.add(new JScrollPane(monoCipherArea), gbc);
-
-        gbc.gridy = 2;
-        gbc.weighty = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        JPanel row = new JPanel();
-        row.add(new JLabel("Max candidates:"));
-        row.add(monoCandidatesSpinner);
-        panel.add(row, gbc);
+        panel.add(new JScrollPane(caesarCipherArea), gbc);
 
         return panel;
     }
@@ -177,36 +161,6 @@ public class AttackPanel extends JPanel {
         return panel;
     }
 
-    private JPanel createVigenerePanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(new TitledBorder("Vigenere Crib/Key Helper"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 4, 4, 4);
-        gbc.fill = GridBagConstraints.BOTH;
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = 0;
-        panel.add(new JLabel("Ciphertext:"), gbc);
-
-        gbc.gridy = 1;
-        gbc.weighty = 1;
-        panel.add(new JScrollPane(vigCipherArea), gbc);
-
-        gbc.gridy = 2;
-        gbc.weighty = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        JPanel row = new JPanel();
-        row.add(new JLabel("Guessed key length:"));
-        row.add(vigKeyLenSpinner);
-        row.add(new JLabel("Max candidates:"));
-        row.add(vigCandidatesSpinner);
-        panel.add(row, gbc);
-
-        return panel;
-    }
-
     private void switchCard() {
         String selected = (String) attackSelector.getSelectedItem();
         cardLayout.show(cardPanel, selected);
@@ -216,22 +170,19 @@ public class AttackPanel extends JPanel {
         tableModel.setRowCount(0);
         String selected = (String) attackSelector.getSelectedItem();
         try {
-            if (ATTACK_MONO.equals(selected)) {
-                runMonoAttack();
+            if (ATTACK_CAESAR.equals(selected)) {
+                runCaesarAttack();
             } else if (ATTACK_HILL.equals(selected)) {
                 runHillAttack();
-            } else if (ATTACK_VIG.equals(selected)) {
-                runVigenereHelper();
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Attack Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void runMonoAttack() {
-        MonoalphabeticAttack attack = new MonoalphabeticAttack();
-        int max = (Integer) monoCandidatesSpinner.getValue();
-        List<AttackResult> results = attack.run(monoCipherArea.getText(), max);
+    private void runCaesarAttack() {
+        CaesarAttackHelper attack = new CaesarAttackHelper();
+        List<AttackResult> results = attack.bruteForce(caesarCipherArea.getText());
         for (AttackResult r : results) {
             tableModel.addRow(new Object[]{r.getCandidate(), r.getScore(), r.getPreview()});
         }
@@ -254,16 +205,6 @@ public class AttackPanel extends JPanel {
             });
         } else {
             tableModel.addRow(new Object[]{"N/A", "FAILED", result.getMessage()});
-        }
-    }
-
-    private void runVigenereHelper() {
-        VigenereAttackHelper helper = new VigenereAttackHelper();
-        int keyLen = (Integer) vigKeyLenSpinner.getValue();
-        int max = (Integer) vigCandidatesSpinner.getValue();
-        List<AttackResult> results = helper.suggestKeys(vigCipherArea.getText(), keyLen, max);
-        for (AttackResult r : results) {
-            tableModel.addRow(new Object[]{r.getCandidate(), r.getScore(), r.getPreview()});
         }
     }
 }

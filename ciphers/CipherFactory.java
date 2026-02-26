@@ -6,16 +6,8 @@ public final class CipherFactory {
 
     public static Cipher getCipher(CipherType type) {
         switch (type) {
-            case VIGENERE:
-                return new VigenereCipher();
-            case OTP:
-                return new OneTimePadCipher();
-            case RAIL_FENCE:
-                return new RailFenceCipher();
-            case ROW_TRANSPOSITION:
-                return new RowTranspositionCipher();
-            case MONOALPHABETIC:
-                return new MonoalphabeticCipher();
+            case CAESAR:
+                return new CaesarSwingCipher();
             case PLAYFAIR:
                 return new PlayfairCipher();
             case HILL:

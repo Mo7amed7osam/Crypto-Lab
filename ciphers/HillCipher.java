@@ -17,6 +17,7 @@ public class HillCipher implements Cipher {
         int[][] key = getMatrix(params);
         validateKey(key);
         int[][] inverse = MathUtils.inverseMatrixMod(key, 26);
+        printMatrix("Hill inverse matrix (mod 26):", inverse);
         String input = TextUtils.lettersOnly(text);
         return process(input, inverse);
     }
@@ -59,5 +60,19 @@ public class HillCipher implements Cipher {
             }
         }
         return out.toString();
+    }
+
+    private void printMatrix(String title, int[][] matrix) {
+        System.out.println(title);
+        for (int r = 0; r < matrix.length; r++) {
+            StringBuilder row = new StringBuilder();
+            for (int c = 0; c < matrix[r].length; c++) {
+                if (c > 0) {
+                    row.append(' ');
+                }
+                row.append(matrix[r][c]);}
+            System.out.println(row);
+        }
+        System.out.println();
     }
 }

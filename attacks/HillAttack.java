@@ -6,7 +6,9 @@ import java.util.List;
 import utils.MathUtils;
 import utils.TextUtils;
 
-public class HillAttack {
+public class
+'H''
+//illAttack {
     public static class HillAttackResult {
         private final boolean success;
         private final String message;

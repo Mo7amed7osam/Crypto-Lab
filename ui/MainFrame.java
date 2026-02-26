@@ -16,7 +16,6 @@ public class MainFrame extends JFrame {
         tabs.addTab("Encrypt", new CryptoOperationPanel(true));
         tabs.addTab("Decrypt", new CryptoOperationPanel(false));
         tabs.addTab("Attack", new AttackPanel());
-        tabs.addTab("Help/About", new HelpPanel());
 
         setLayout(new BorderLayout());
         add(tabs, BorderLayout.CENTER);

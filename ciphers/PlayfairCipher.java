@@ -95,7 +95,24 @@ public class PlayfairCipher implements Cipher {
                 break;
             }
         }
+        printMatrix(matrix, key);
         return matrix;
+    }
+
+    private void printMatrix(char[][] matrix, String key) {
+
+        System.out.println("Playfair matrix for key: " + key);
+        for (int r = 0; r < 5; r++) {
+            StringBuilder row = new StringBuilder();
+            for (int c = 0; c < 5; c++) {
+                if (c > 0) {
+                    row.append(' ');
+                }
+                row.append(matrix[r][c]);
+            }
+            System.out.println(row);
+        }
+        System.out.println();
     }
 
     private int[] find(char[][] matrix, char target) {

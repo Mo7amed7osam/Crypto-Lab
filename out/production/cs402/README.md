@@ -8,13 +8,8 @@ A complete desktop app for encryption, decryption, and basic attack tooling for 
   - Encrypt
   - Decrypt
   - Attack
-  - Help/About
 - Ciphers:
-  - Vigenere
-  - One-Time Pad (OTP)
-  - Rail Fence
-  - Row Transposition
-  - Monoalphabetic Substitution
+  - Caesar
   - Playfair
   - Hill Cipher
 - File support (UTF-8):
@@ -23,9 +18,8 @@ A complete desktop app for encryption, decryption, and basic attack tooling for 
   - Encrypt File
   - Decrypt File
 - Attack tools:
-  - Monoalphabetic frequency analysis
+  - Caesar brute-force
   - Hill known-plaintext attack
-  - Vigenere guessed key-length helper
 
 ## Project Structure
 
@@ -34,7 +28,7 @@ A complete desktop app for encryption, decryption, and basic attack tooling for 
 - `ciphers/`
 - `attacks/`
 - `utils/`
-- `sample/`
+- `files/`
 
 ## Compile
 
@@ -58,4 +52,4 @@ java Main
 
 ## Sample Data
 
-Check files under `sample/` for quick testing.
+Check files under `files/` for quick testing.
