@@ -10,6 +10,10 @@ A complete desktop app for encryption, decryption, and basic attack tooling for 
   - Attack
 - Ciphers:
   - Caesar
+  - Vigenere
+  - One Time Pad (Encrypt only)
+  - Rail Fence
+  - Row Transposition
   - Playfair
   - Hill Cipher
 - File support (UTF-8):
@@ -45,8 +49,7 @@ java Main
 ## Usage Notes
 
 - `Letters only (A-Z)` is ON by default and removes non-letters.
-- OTP key length must equal text letter count.
-- Monoalphabetic map must contain 26 unique letters.
+- OTP key length must equal text letter count (encryption only).
 - Playfair merges `I/J`.
 - Hill key matrix must be invertible modulo 26.
 

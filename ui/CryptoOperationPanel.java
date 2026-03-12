@@ -33,7 +33,7 @@ public class CryptoOperationPanel extends JPanel {
 
     public CryptoOperationPanel(boolean encryptMode) {
         this.encryptMode = encryptMode;
-        this.configPanel = new CipherConfigPanel();
+        this.configPanel = new CipherConfigPanel(inputArea::getText, this);
 
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

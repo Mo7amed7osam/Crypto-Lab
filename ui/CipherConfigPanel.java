@@ -1,13 +1,18 @@
 package ui;
 
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.security.SecureRandom;
+import java.util.function.Supplier;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -16,18 +21,30 @@ import javax.swing.SpinnerNumberModel;
 import ciphers.CipherType;
 import ciphers.KeyParams;
 import utils.MathUtils;
+import utils.TextUtils;
 
 public class CipherConfigPanel extends JPanel {
+    private final Supplier<String> inputTextSupplier;
+    private final Component dialogParent;
+    private final SecureRandom random = new SecureRandom();
+
     private final JComboBox<CipherType> cipherCombo;
     private final JCheckBox lettersOnlyCheck;
     private final JPanel cardPanel;
     private final CardLayout cardLayout;
 
     private final JSpinner caesarShiftSpinner = new JSpinner(new SpinnerNumberModel(3, 0, 25, 1));
+    private final JTextField vigenereKeyField = new JTextField(18);
+    private final JTextField otpKeyField = new JTextField(18);
+    private final JSpinner railSpinner = new JSpinner(new SpinnerNumberModel(2, 2, 20, 1));
+    private final JTextField rowOrderField = new JTextField("3 1 4 2", 18);
     private final JTextField playfairKeyField = new JTextField(18);
     private final JTextField hillMatrixField = new JTextField("3 3; 2 5", 18);
 
-    public CipherConfigPanel() {
+    public CipherConfigPanel(Supplier<String> inputTextSupplier, Component dialogParent) {
+        this.inputTextSupplier = inputTextSupplier;
+        this.dialogParent = dialogParent;
+
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(4, 4, 4, 4);
@@ -51,6 +68,10 @@ public class CipherConfigPanel extends JPanel {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         cardPanel.add(createCaesarPanel(), CipherType.CAESAR.name());
+        cardPanel.add(createVigenerePanel(), CipherType.VIGENERE.name());
+        cardPanel.add(createOtpPanel(), CipherType.OTP.name());
+        cardPanel.add(createRailPanel(), CipherType.RAIL_FENCE.name());
+        cardPanel.add(createRowPanel(), CipherType.ROW_TRANSPOSITION.name());
         cardPanel.add(createPlayfairPanel(), CipherType.PLAYFAIR.name());
         cardPanel.add(createHillPanel(), CipherType.HILL.name());
 
@@ -82,6 +103,49 @@ public class CipherConfigPanel extends JPanel {
         return panel;
     }
 
+    private JPanel createVigenerePanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = baseGbc();
+        panel.add(new JLabel("Key:"), gbc);
+        gbc.gridx = 1;
+        panel.add(vigenereKeyField, gbc);
+        return panel;
+    }
+
+    private JPanel createOtpPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = baseGbc();
+        panel.add(new JLabel("OTP Key Text:"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        panel.add(otpKeyField, gbc);
+
+        gbc.gridx = 2;
+        gbc.weightx = 0;
+        JButton genBtn = new JButton("Generate Random Key");
+        genBtn.addActionListener(e -> generateOtpKey());
+        panel.add(genBtn, gbc);
+        return panel;
+    }
+
+    private JPanel createRailPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = baseGbc();
+        panel.add(new JLabel("Rails:"), gbc);
+        gbc.gridx = 1;
+        panel.add(railSpinner, gbc);
+        return panel;
+    }
+
+    private JPanel createRowPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = baseGbc();
+        panel.add(new JLabel("Order (ex: 3 1 4 2):"), gbc);
+        gbc.gridx = 1;
+        panel.add(rowOrderField, gbc);
+        return panel;
+    }
+
     private JPanel createHillPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = baseGbc();
@@ -106,6 +170,24 @@ public class CipherConfigPanel extends JPanel {
         cardLayout.show(cardPanel, type.name());
     }
 
+    private void generateOtpKey() {
+        String input = inputTextSupplier == null ? "" : inputTextSupplier.get();
+        int len = TextUtils.lettersOnly(input).length();
+        if (len == 0) {
+            JOptionPane.showMessageDialog(dialogParent,
+                    "Write input text first to generate OTP key.",
+                    "OTP",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        StringBuilder key = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            key.append((char) ('A' + random.nextInt(26)));
+        }
+        otpKeyField.setText(key.toString());
+    }
+
     public CipherType getSelectedCipherType() {
         return (CipherType) cipherCombo.getSelectedItem();
     }
@@ -120,6 +202,18 @@ public class CipherConfigPanel extends JPanel {
         switch (type) {
             case CAESAR:
                 params.put("shift", (Integer) caesarShiftSpinner.getValue());
+                break;
+            case VIGENERE:
+                params.put("key", vigenereKeyField.getText().trim());
+                break;
+            case OTP:
+                params.put("key", otpKeyField.getText().trim());
+                break;
+            case RAIL_FENCE:
+                params.put("rails", (Integer) railSpinner.getValue());
+                break;
+            case ROW_TRANSPOSITION:
+                params.put("order", rowOrderField.getText().trim());
                 break;
             case PLAYFAIR:
                 params.put("key", playfairKeyField.getText().trim());

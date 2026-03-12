@@ -8,6 +8,14 @@ public final class CipherFactory {
         switch (type) {
             case CAESAR:
                 return new CaesarSwingCipher();
+            case VIGENERE:
+                return new VigenereSimpleCipher();
+            case OTP:
+                return new OneTimePadSimpleCipher();
+            case RAIL_FENCE:
+                return new RailFenceSimpleCipher();
+            case ROW_TRANSPOSITION:
+                return new RowTranspositionSimpleCipher();
             case PLAYFAIR:
                 return new PlayfairCipher();
             case HILL:

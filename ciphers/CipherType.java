@@ -2,6 +2,10 @@ package ciphers;
 
 public enum CipherType {
     CAESAR("Caesar"),
+    VIGENERE("Vigenere"),
+    OTP("One Time Pad (Encrypt Only)"),
+    RAIL_FENCE("Rail Fence"),
+    ROW_TRANSPOSITION("Row Transposition"),
     PLAYFAIR("Playfair"),
     HILL("Hill Cipher");
 
