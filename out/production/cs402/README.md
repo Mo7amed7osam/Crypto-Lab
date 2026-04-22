@@ -24,6 +24,8 @@ A complete desktop app for encryption, decryption, and basic attack tooling for 
 - Attack tools:
   - Caesar brute-force
   - Hill known-plaintext attack
+- AES-128 key expansion viewer
+- AES-128 key expansion console program with input format, source, and output menus
 
 ## Project Structure
 
@@ -37,13 +39,21 @@ A complete desktop app for encryption, decryption, and basic attack tooling for 
 ## Compile
 
 ```bash
-javac Main.java ui/*.java ciphers/*.java attacks/*.java utils/*.java
+javac Main.java AesKeyExpansionProgram.java ui/*.java ciphers/*.java attacks/*.java utils/*.java
 ```
 
 ## Run
 
+GUI app:
+
 ```bash
 java Main
+```
+
+AES key expansion program:
+
+```bash
+java AesKeyExpansionProgram
 ```
 
 ## Usage Notes
