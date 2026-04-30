@@ -1,6 +1,7 @@
 package ciphers;
 
 public enum CipherType {
+    AES("AES-128"),
     CAESAR("Caesar"),
     VIGENERE("Vigenere"),
     OTP("One Time Pad (Encrypt Only)"),

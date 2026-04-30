@@ -40,6 +40,7 @@ public class CipherConfigPanel extends JPanel {
     private final JTextField rowOrderField = new JTextField("3 1 4 2", 18);
     private final JTextField playfairKeyField = new JTextField(18);
     private final JTextField hillMatrixField = new JTextField("3 3; 2 5", 18);
+    private final JTextField aesKeyField = new JTextField("Thats my Kung Fu", 18);
 
     public CipherConfigPanel(Supplier<String> inputTextSupplier, Component dialogParent) {
         this.inputTextSupplier = inputTextSupplier;
@@ -67,6 +68,7 @@ public class CipherConfigPanel extends JPanel {
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
+        cardPanel.add(createAesPanel(), CipherType.AES.name());
         cardPanel.add(createCaesarPanel(), CipherType.CAESAR.name());
         cardPanel.add(createVigenerePanel(), CipherType.VIGENERE.name());
         cardPanel.add(createOtpPanel(), CipherType.OTP.name());
@@ -83,6 +85,15 @@ public class CipherConfigPanel extends JPanel {
 
         cipherCombo.addActionListener(e -> showSelectedCard());
         showSelectedCard();
+    }
+
+    private JPanel createAesPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = baseGbc();
+        panel.add(new JLabel("AES Key (16 chars):"), gbc);
+        gbc.gridx = 1;
+        panel.add(aesKeyField, gbc);
+        return panel;
     }
 
     private JPanel createCaesarPanel() {
@@ -168,6 +179,12 @@ public class CipherConfigPanel extends JPanel {
     private void showSelectedCard() {
         CipherType type = getSelectedCipherType();
         cardLayout.show(cardPanel, type.name());
+        if (type == CipherType.AES) {
+            lettersOnlyCheck.setSelected(false);
+            lettersOnlyCheck.setEnabled(false);
+        } else {
+            lettersOnlyCheck.setEnabled(true);
+        }
     }
 
     private void generateOtpKey() {
@@ -200,6 +217,9 @@ public class CipherConfigPanel extends JPanel {
         CipherType type = getSelectedCipherType();
         KeyParams params = new KeyParams();
         switch (type) {
+            case AES:
+                params.put("key", aesKeyField.getText());
+                break;
             case CAESAR:
                 params.put("shift", (Integer) caesarShiftSpinner.getValue());
                 break;

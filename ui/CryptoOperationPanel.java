@@ -16,6 +16,7 @@ import javax.swing.border.TitledBorder;
 
 import ciphers.Cipher;
 import ciphers.CipherFactory;
+import ciphers.CipherType;
 import ciphers.KeyParams;
 import utils.FileUtils;
 import utils.TextUtils;
@@ -230,9 +231,15 @@ public class CryptoOperationPanel extends JPanel {
     }
 
     private String processText(String source, boolean encrypt) {
-        String normalized = TextUtils.normalize(source, configPanel.isLettersOnlyEnabled());
+        CipherType type = configPanel.getSelectedCipherType();
+        String normalized;
+        if (type == CipherType.AES) {
+            normalized = source == null ? "" : source;
+        } else {
+            normalized = TextUtils.normalize(source, configPanel.isLettersOnlyEnabled());
+        }
         KeyParams params = configPanel.buildKeyParams();
-        Cipher cipher = CipherFactory.getCipher(configPanel.getSelectedCipherType());
+        Cipher cipher = CipherFactory.getCipher(type);
         return encrypt ? cipher.encrypt(normalized, params) : cipher.decrypt(normalized, params);
     }
 

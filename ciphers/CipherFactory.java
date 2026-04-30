@@ -6,6 +6,8 @@ public final class CipherFactory {
 
     public static Cipher getCipher(CipherType type) {
         switch (type) {
+            case AES:
+                return new AesCipher();
             case CAESAR:
                 return new CaesarSwingCipher();
             case VIGENERE:
